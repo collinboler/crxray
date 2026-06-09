@@ -1,0 +1,5 @@
+node_modules/
+*.crx
+*.tgz
+.DS_Store
+/tmp/

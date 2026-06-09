@@ -1,0 +1,46 @@
+{
+  "name": "crxray",
+  "version": "0.1.0",
+  "description": "X-ray any Chrome or Edge extension: download, unpack, and audit its source from just the store link. Built for AI agents and humans alike.",
+  "type": "module",
+  "bin": {
+    "crxray": "bin/crxray.js"
+  },
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "skill"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  },
+  "keywords": [
+    "chrome-extension",
+    "crx",
+    "chrome-web-store",
+    "edge-addons",
+    "download",
+    "unpack",
+    "security",
+    "audit",
+    "ai-agents",
+    "cli"
+  ],
+  "author": "Collin Boler",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/collinboler/crxray.git"
+  },
+  "homepage": "https://github.com/collinboler/crxray#readme",
+  "bugs": {
+    "url": "https://github.com/collinboler/crxray/issues"
+  }
+}
