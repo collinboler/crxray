@@ -1,6 +1,6 @@
 {
   "name": "crxray",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Download Chrome and Edge extension source code in one command — audit, deobfuscate, beautify, and diff. Paste a store link, get readable source on disk.",
   "type": "module",
   "bin": {
@@ -50,6 +50,7 @@
     "url": "https://github.com/collinboler/crxray/issues"
   },
   "dependencies": {
+    "crxray": "^0.2.0",
     "js-beautify": "^1.15.4",
     "webcrack": "^2.15.1"
   }

@@ -27,6 +27,8 @@ Download options:
       --map             Entry-point map and readability stats only
       --deobfuscate     Deobfuscate all JS (webcrack: obfuscator.io, webpack, etc.)
       --beautify        Beautify all JS files
+      --no-maps         Delete .map source maps (on by default with --audit)
+      --keep-maps       Keep source maps even when using --audit
       --json            Machine-readable JSON output
   -q, --quiet           Only print paths / suppress post-process logs
 
@@ -65,6 +67,8 @@ try {
       map: { type: 'boolean' },
       deobfuscate: { type: 'boolean' },
       beautify: { type: 'boolean' },
+      'no-maps': { type: 'boolean' },
+      'keep-maps': { type: 'boolean' },
     },
   });
 } catch (err) {
@@ -105,6 +109,12 @@ try {
   fail(err.message);
 }
 
+function mapOpts(values) {
+  return {
+    noMaps: values['keep-maps'] ? false : values['no-maps'] || values.audit,
+  };
+}
+
 async function runDownload(input, values) {
   const result = await crxray(input, {
     out: values.out,
@@ -116,6 +126,7 @@ async function runDownload(input, values) {
     deobfuscate: values.deobfuscate,
     beautify: values.beautify,
     quiet: values.quiet,
+    ...mapOpts(values),
   });
 
   if (values.json) {
@@ -135,6 +146,9 @@ async function runDownload(input, values) {
   }
 
   printSummary(result);
+  if (result.mapsRemoved?.length) {
+    console.log(`Removed ${result.mapsRemoved.length} source map(s) (use --keep-maps to retain)`);
+  }
   if (result.audit) {
     console.log('');
     console.log(formatAuditReport(result.audit));
@@ -165,6 +179,7 @@ async function runAudit(args, values) {
     deobfuscate: values.deobfuscate,
     beautify: values.beautify,
     quiet: values.quiet,
+    ...mapOpts({ ...values, audit: true }),
   });
 
   if (values.json) {

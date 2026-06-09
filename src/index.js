@@ -11,6 +11,7 @@ import { beautifyDirectory } from './beautify.js';
 import { deobfuscateDirectory } from './deobfuscate.js';
 import { diffExtensions } from './diff.js';
 import { isDirectory } from './walk.js';
+import { removeSourceMaps } from './sourcemaps.js';
 
 export { parseExtensionRef } from './parse.js';
 export { downloadCrx, crxUrl } from './download.js';
@@ -22,6 +23,7 @@ export { buildEntryPointMap } from './map.js';
 export { beautifyDirectory } from './beautify.js';
 export { deobfuscateDirectory } from './deobfuscate.js';
 export { diffExtensions, formatDiffReport } from './diff.js';
+export { removeSourceMaps } from './sourcemaps.js';
 
 /**
  * Download and unpack an extension.
@@ -70,6 +72,10 @@ export async function crxray(input, opts = {}) {
     writeFileSync(crxPath, crx);
   }
 
+  const noMaps = opts.noMaps ?? opts.audit;
+  let mapsRemoved = [];
+  if (noMaps) mapsRemoved = removeSourceMaps(outDir);
+
   const postProcess = await runPostProcess(outDir, manifest, summary, opts);
 
   return {
@@ -77,7 +83,8 @@ export async function crxray(input, opts = {}) {
     store,
     outDir,
     crxPath,
-    fileCount,
+    fileCount: fileCount - mapsRemoved.length,
+    mapsRemoved,
     manifest,
     summary,
     ...postProcess,
@@ -91,8 +98,13 @@ export async function processExtension(dir, opts = {}) {
   const outDir = path.resolve(dir);
   const manifest = readManifest(outDir);
   const summary = summarizeManifest(manifest);
+
+  const noMaps = opts.noMaps ?? opts.audit;
+  let mapsRemoved = [];
+  if (noMaps) mapsRemoved = removeSourceMaps(outDir);
+
   const postProcess = await runPostProcess(outDir, manifest, summary, opts);
-  return { outDir, manifest, summary, ...postProcess };
+  return { outDir, manifest, summary, mapsRemoved, ...postProcess };
 }
 
 /**
