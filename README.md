@@ -8,7 +8,7 @@
 ![node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
 
 ```bash
-npx crxray pifapfmbofjgaenkhhipjhfacfmmhkcp
+npx crxray https://chromewebstore.google.com/detail/study-buddy/pifapfmbofjgaenkhhipjhfacfmmhkcp
 ```
 
 ![crxray demo — download Chrome extension source in one command](./docs/demo.gif)

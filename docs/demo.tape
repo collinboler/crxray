@@ -9,11 +9,11 @@ Set Padding 24
 Set Framerate 24
 Set TypingSpeed 42ms
 
-Type "# Paste a store link or extension ID"
+Type "# Paste a Chrome Web Store link"
 Sleep 350ms
 Enter 2
 
-Type "npx crxray pifapfmbofjgaenkhhipjhfacfmmhkcp"
+Type "npx crxray https://chromewebstore.google.com/detail/study-buddy/pifapfmbofjgaenkhhipjhfacfmmhkcp"
 Sleep 300ms
 Enter
 

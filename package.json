@@ -1,6 +1,6 @@
 {
   "name": "crxray",
-  "version": "0.2.1",
+  "version": "0.2.12",
   "description": "Download Chrome and Edge extension source code in one command — audit, deobfuscate, beautify, and diff. Paste a store link, get readable source on disk.",
   "type": "module",
   "bin": {
