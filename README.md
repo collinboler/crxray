@@ -26,7 +26,7 @@ Unpacked 911 files to ublock-origin-lite-2026.607.1724/
   Background: /js/background.js
 ```
 
-**Zero dependencies. Zero install. Node 18+.**
+**Zero install. Node 18+.** Download/unpack core is dependency-free; audit, beautify, and deobfuscate ship with `js-beautify` and `webcrack`.
 
 ## Download extension source in one command
 
@@ -63,8 +63,42 @@ Works with Chrome Web Store URLs (current and legacy), Edge Add-ons URLs, or a b
 | `--store <name>` | Store for bare IDs: `chrome` (default) or `edge` |
 | `--crx-only` | Save the raw `.crx` file, skip unpacking |
 | `--keep-crx` | Keep the `.crx` alongside the unpacked source |
+| `--audit` | Security audit + entry-point map (writes `.crxray-audit.json`) |
+| `--map` | Entry-point map and readability stats only |
+| `--deobfuscate` | Deobfuscate all JS via [webcrack](https://github.com/j4k0xb/webcrack) |
+| `--beautify` | Beautify all JS files |
 | `--json` | Machine-readable output (for scripts and agents) |
 | `-q, --quiet` | Print only the output path |
+
+### Security audit
+
+```bash
+npx crxray <url> --audit
+npx crxray audit ./unpacked-extension/   # audit an existing folder
+```
+
+Prints a risk score, permission tiers, suspicious patterns (`eval`, `chrome.cookies`, etc.), network endpoints, and a **start here** file list. Writes `.crxray-audit.json` for agents.
+
+### Deobfuscate & beautify
+
+```bash
+# Full pipeline: download → deobfuscate → beautify → audit
+npx crxray <url> --deobfuscate --beautify --audit
+```
+
+- **`--deobfuscate`** — reverses obfuscator.io, unpacks webpack/browserify bundles (best-effort)
+- **`--beautify`** — formats every `.js` file for reading in your editor or agent
+
+> **Note:** `--deobfuscate` uses webcrack, which has a native optional dep (`isolated-vm`). If `npm install` fails, retry with `npm install -g crxray --ignore-scripts`. Node 18–22 LTS recommended.
+
+### Diff two versions
+
+```bash
+npx crxray diff ./old-unpacked ./new-unpacked
+npx crxray diff <url-a> <url-b>   # downloads both, then compares
+```
+
+Shows permission changes, added/removed/modified files, and new network endpoints in changed JS.
 
 ## Use with AI agents
 
@@ -95,7 +129,7 @@ and your agent will download it, read the manifest and source, and report what i
 
 No skill system? Just tell your agent:
 
-> Run `npx -y crxray <store-url> --json`, then read the unpacked source in the reported `outDir`.
+> Run `npx -y crxray <store-url> --audit --deobfuscate --beautify --json`, then read `outDir` and `.crxray-audit.json`.
 
 ## Programmatic API
 
@@ -109,7 +143,7 @@ const { outDir, summary } = await crxray(
 console.log(summary.permissions); // ['alarms', 'contextMenus', 'privacy', ...]
 ```
 
-Lower-level pieces are exported too: `parseExtensionRef`, `downloadCrx`, `crxToZip`, `extractZip`, `readManifest`.
+Lower-level pieces are exported too: `auditExtension`, `crxrayDiff`, `beautifyDirectory`, `deobfuscateDirectory`, `buildEntryPointMap`, `parseExtensionRef`, `downloadCrx`, `crxToZip`, `extractZip`, `readManifest`.
 
 ## How it works
 

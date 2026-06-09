@@ -1,11 +1,11 @@
 ---
 name: crxray
-description: Download Chrome and Edge extension source code in one command from a store link or extension ID. Use when the user pastes a Chrome Web Store or Edge Add-ons URL, asks to download extension source code, get the source of an extension, unpack a CRX, inspect, audit, review, or read what a browser extension does, or asks about extension permissions or safety.
+description: Download Chrome and Edge extension source code in one command from a store link or extension ID. Audits permissions, deobfuscates and beautifies JS, diffs versions, and maps entry points. Use when the user pastes a Chrome Web Store or Edge Add-ons URL, asks to download extension source code, audit, deobfuscate, beautify, diff, inspect, or review what a browser extension does.
 ---
 
 # crxray — download extension source code
 
-The easiest way to get the full source code of any Chrome or Edge extension. Paste a store link, run one command, get every file unpacked locally. No install needed — run via `npx`.
+Download, audit, deobfuscate, and beautify any Chrome or Edge extension. No install needed — run via `npx`.
 
 ## Quick start
 
@@ -13,36 +13,53 @@ The easiest way to get the full source code of any Chrome or Edge extension. Pas
 npx -y crxray <store-url-or-extension-id>
 ```
 
-This downloads the CRX, unpacks it to `./<name>-<version>/`, and prints the extension's name, version, manifest version, permissions, host permissions, background script, and content scripts.
+Full pipeline for security review:
 
-Accepted inputs:
+```bash
+npx -y crxray <url> --audit --deobfuscate --beautify --json
+```
 
-- `https://chromewebstore.google.com/detail/<slug>/<id>` (current Chrome Web Store)
-- `https://chrome.google.com/webstore/detail/<slug>/<id>` (legacy)
-- `https://microsoftedge.microsoft.com/addons/detail/<slug>/<id>` (Edge Add-ons)
-- A bare 32-character extension ID (add `--store edge` for Edge IDs)
+Then read `outDir`, `.crxray-audit.json`, and files listed in `audit.startHere`.
 
-## Useful flags
+## Commands
+
+| Command | Purpose |
+|---------|---------|
+| `crxray <url>` | Download and unpack source |
+| `crxray <url> --audit` | + security report + entry-point map |
+| `crxray <url> --deobfuscate --beautify` | + readable JS |
+| `crxray audit <dir>` | Audit an already-unpacked folder |
+| `crxray diff <left> <right>` | Compare two unpacked dirs or store URLs |
+
+## Flags
 
 | Flag | Effect |
 |------|--------|
-| `--json` | Machine-readable result: output dir, file count, permission summary. Prefer this when scripting. |
-| `-o <dir>` | Choose the output directory |
-| `--crx-only` | Save the raw `.crx` without unpacking |
-| `-q` | Print only the output path |
+| `--json` | Machine-readable output — prefer for agents |
+| `-o <dir>` | Output directory |
+| `--audit` | Risk score, permissions, suspicious patterns, endpoints, start-here list |
+| `--deobfuscate` | webcrack: obfuscator.io, webpack, browserify (best-effort) |
+| `--beautify` | Format all `.js` files |
+| `--map` | Entry-point map only (included in `--audit`) |
+| `-q` | Quiet |
 
-## Auditing an unpacked extension
+## Audit workflow
 
-After unpacking, a typical security/behavior review:
+1. Run with `--audit --deobfuscate --beautify --json`.
+2. Read `.crxray-audit.json` in `outDir` — check `risk.level`, `permissions.high`, `findings`, `endpoints`.
+3. Start with files in `startHere` (manifest, background, content scripts, popup).
+4. Grep for exfiltration if findings are sparse: `fetch(`, `chrome.cookies`, hardcoded domains.
 
-1. Read `manifest.json` first — permissions, host permissions, content scripts, background entry point.
-2. Check the highest-risk surfaces: `<all_urls>` host access, `webRequest`, `cookies`, `tabs`, `scripting`, `nativeMessaging`, `clipboardRead`.
-3. Grep the source for exfiltration patterns: `fetch(`, `XMLHttpRequest`, `chrome.cookies`, `eval(`, `atob(`, hardcoded third-party domains.
-4. Note that store-distributed code is usually minified; trace data flow rather than judging readability.
+## Diff workflow
+
+```bash
+npx -y crxray diff ./extension-v1 ./extension-v2 --json
+```
+
+Check `permissionChanges` first (new `tabs`, `cookies`, `<all_urls>` are red flags), then `files.added` and `endpointChanges.added`.
 
 ## Notes
 
-- Requires Node 18+. The CLI is dependency-free.
-- The download uses the browsers' own public update endpoints, so the fetched CRX is byte-identical to what the store serves.
-- If an extension is unlisted/removed the store returns 204 and crxray reports "not found".
-- Extension code belongs to its authors. Unpack for inspection, auditing, and learning — do not redistribute.
+- Node 18+. If `--deobfuscate` install fails: `npm install -g crxray --ignore-scripts`
+- Store only serves the latest CRX — diff two local folders for version comparisons
+- Extension code belongs to its authors — inspect and audit, don't redistribute
