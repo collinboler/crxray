@@ -1,0 +1,10 @@
+Unpacked 38 files to study-buddy-4.5/
+
+  Study Buddy  v4.5  (MV3, chrome)
+  Cheat on Proctored Exams
+
+  Permissions: storage, identity, activeTab, scripting
+  Host permissions: <all_urls>
+  Background: background.js
+  Content script: [visibility-indicator.js] on <all_urls>
+  Content script: [cursor-loader.js] on <all_urls>

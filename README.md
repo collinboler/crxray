@@ -7,24 +7,21 @@
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 ![node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
 
+```bash
+npx crxray pifapfmbofjgaenkhhipjhfacfmmhkcp
+```
+
+![crxray demo — download Chrome extension source in one command](./docs/demo.gif)
+
+```bash
+npx crxray pifapfmbofjgaenkhhipjhfacfmmhkcp --audit
+```
+
+![crxray demo — security audit with risk score, permissions, and network endpoints](./docs/demo-audit.gif)
+
 The Chrome Web Store has no download button. Edge doesn't either. Every extension is just a ZIP file behind the browser's own update endpoint — but getting at it normally means browser extensions, sketchy websites, or stale npm packages.
 
 `crxray` makes it trivial: paste a store URL (or extension ID), and it downloads the CRX, strips the signature header, and unpacks every file to a local folder. No account, no browser plugin, no manual steps. One command, full source code on disk.
-
-```bash
-npx crxray https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh
-```
-
-```
-Unpacked 911 files to ublock-origin-lite-2026.607.1724/
-
-  uBlock Origin Lite  v2026.607.1724  (MV3, chrome)
-  An efficient content blocker. Blocks ads, trackers, miners, and more.
-
-  Permissions: activeTab, declarativeNetRequest, offscreen, scripting, storage, userScripts
-  Host permissions: <all_urls>
-  Background: /js/background.js
-```
 
 **Zero install. Node 18+.** Download/unpack core is dependency-free; audit, beautify, and deobfuscate ship with `js-beautify` and `webcrack`.
 
