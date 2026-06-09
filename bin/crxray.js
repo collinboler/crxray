@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { crxray } from '../src/index.js';
 
-const HELP = `crxray — x-ray any Chrome or Edge extension from its store link
+const HELP = `crxray — download Chrome & Edge extension source code from a store link
 
 Usage:
   crxray <store-url-or-extension-id> [options]

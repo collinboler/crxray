@@ -1,11 +1,11 @@
 ---
 name: crxray
-description: Download and unpack the source code of any Chrome or Edge browser extension from its store link or extension ID using the crxray CLI. Use when the user pastes a Chrome Web Store or Edge Add-ons URL, asks to download, inspect, audit, review, or read the source of a browser extension, or asks what permissions an extension uses or whether an extension is safe.
+description: Download Chrome and Edge extension source code in one command from a store link or extension ID. Use when the user pastes a Chrome Web Store or Edge Add-ons URL, asks to download extension source code, get the source of an extension, unpack a CRX, inspect, audit, review, or read what a browser extension does, or asks about extension permissions or safety.
 ---
 
-# crxray — X-ray browser extensions
+# crxray — download extension source code
 
-Download and unpack any Chrome Web Store or Edge Add-ons extension so its full source can be read locally. No install needed — run via `npx`.
+The easiest way to get the full source code of any Chrome or Edge extension. Paste a store link, run one command, get every file unpacked locally. No install needed — run via `npx`.
 
 ## Quick start
 

@@ -1,7 +1,7 @@
 {
   "name": "crxray",
-  "version": "0.1.0",
-  "description": "X-ray any Chrome or Edge extension: download, unpack, and audit its source from just the store link. Built for AI agents and humans alike.",
+  "version": "0.1.1",
+  "description": "Download Chrome and Edge extension source code in one command. Paste a store link, get the full unpacked source on disk. Zero dependencies.",
   "type": "module",
   "bin": {
     "crxray": "bin/crxray.js"
@@ -23,10 +23,13 @@
   },
   "keywords": [
     "chrome-extension",
+    "chrome-extension-source",
+    "download-extension",
     "crx",
     "chrome-web-store",
     "edge-addons",
     "download",
+    "source-code",
     "unpack",
     "security",
     "audit",

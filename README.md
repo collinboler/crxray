@@ -1,13 +1,15 @@
 # crxray
 
-> X-ray any Chrome or Edge extension — download and unpack its full source code from just the store link.
+> **Download Chrome & Edge extension source code in one command.** Paste a store link, get the full unpacked source on disk.
 
 [![npm](https://img.shields.io/npm/v/crxray)](https://www.npmjs.com/package/crxray)
 [![CI](https://github.com/collinboler/crxray/actions/workflows/test.yml/badge.svg)](https://github.com/collinboler/crxray/actions/workflows/test.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 ![node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
 
-The Chrome Web Store has no download button. But every extension is just a ZIP file sitting behind Google's own update endpoint. `crxray` fetches it, strips the CRX signature header, and unpacks the source — so you (or your AI agent) can read exactly what an extension does **before** trusting it with `<all_urls>`.
+The Chrome Web Store has no download button. Edge doesn't either. Every extension is just a ZIP file behind the browser's own update endpoint — but getting at it normally means browser extensions, sketchy websites, or stale npm packages.
+
+`crxray` makes it trivial: paste a store URL (or extension ID), and it downloads the CRX, strips the signature header, and unpacks every file to a local folder. No account, no browser plugin, no manual steps. One command, full source code on disk.
 
 ```bash
 npx crxray https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh
@@ -26,25 +28,32 @@ Unpacked 911 files to ublock-origin-lite-2026.607.1724/
 
 **Zero dependencies. Zero install. Node 18+.**
 
+## Download extension source in one command
+
+```bash
+# Chrome Web Store — paste any store link
+npx crxray https://chromewebstore.google.com/detail/<slug>/<id>
+
+# Edge Add-ons
+npx crxray https://microsoftedge.microsoft.com/addons/detail/<slug>/<id>
+
+# Just the extension ID works too
+npx crxray cjpalhdlnbpafiamejdnhcphjbkeiagm
+```
+
+That's it. You get a folder with `manifest.json`, background scripts, content scripts, popup HTML, assets — everything the extension ships with. Ready to open in your editor, grep through, or hand to an AI agent.
+
 ## Why
 
-- **Audit before installing** — extensions run with terrifying permissions. Read the actual code, not the store blurb.
-- **Built for AI agents** — paste a store link into Cursor, Claude Code, or any agent and let it review the source for you ([see below](#use-with-ai-agents)).
-- **Learn from the best** — see how popular extensions are actually built.
-- **Rescue abandoned extensions** — recover source when the author and repo have vanished.
+- **Source code, instantly** — no CRX Viewer, no sketchy download sites, no wrestling with browser devtools. Paste a link, read the code.
+- **Audit before installing** — extensions run with terrifying permissions. Download the source first and see what it actually does.
+- **Built for AI agents** — paste a store link into Cursor, Claude Code, or any agent and let it review the unpacked source for you ([see below](#use-with-ai-agents)).
+- **Learn from the best** — download how uBlock, React DevTools, or any popular extension is actually built.
+- **Rescue abandoned extensions** — recover source when the author and GitHub repo have vanished.
 
 ## Usage
 
-```bash
-# Chrome Web Store URL (current or legacy format)
-npx crxray https://chromewebstore.google.com/detail/<slug>/<id>
-
-# Edge Add-ons URL
-npx crxray https://microsoftedge.microsoft.com/addons/detail/<slug>/<id>
-
-# Bare extension ID
-npx crxray cjpalhdlnbpafiamejdnhcphjbkeiagm
-```
+Works with Chrome Web Store URLs (current and legacy), Edge Add-ons URLs, or a bare 32-character extension ID.
 
 ### Options
 
