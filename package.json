@@ -50,6 +50,7 @@
     "url": "https://github.com/collinboler/crxray/issues"
   },
   "dependencies": {
+    "acorn": "^8.19.0",
     "crxray": "^0.2.0",
     "js-beautify": "^1.15.4",
     "webcrack": "^2.15.1"

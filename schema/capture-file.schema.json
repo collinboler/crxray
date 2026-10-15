@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "crxray behavior-capture file",
+  "type": "object",
+  "required": ["schemaVersion", "extensionId", "events", "limitations", "disclaimer"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "scenarioId": { "type": "string" },
+    "extensionId": { "type": "string" },
+    "version": { "type": ["string", "null"] },
+    "chromeVersion": { "type": ["string", "null"] },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["seq", "ts", "kind"],
+        "properties": {
+          "seq": { "type": "integer", "minimum": 0 },
+          "ts": { "type": "integer" },
+          "sessionId": { "type": "string" },
+          "kind": { "enum": ["network", "storage", "message", "console", "crypto"] },
+          "direction": { "enum": ["request", "response", "sent", "received"] },
+          "targetType": { "type": "string" },
+          "url": { "type": "string" },
+          "method": { "type": "string" },
+          "status": { "type": "integer" },
+          "headers": { "type": "object" },
+          "body": {},
+          "truncated": { "type": "boolean" },
+          "originalByteLength": { "type": "integer" },
+          "area": { "enum": ["local", "sync"] },
+          "value": {},
+          "message": {},
+          "level": { "type": "string" },
+          "text": { "type": "string" },
+          "algorithm": { "type": "string" },
+          "dataByteLength": { "type": "integer" },
+          "outputByteLength": { "type": "integer" },
+          "verified": { "type": "boolean" },
+          "failed": { "type": "boolean" }
+        }
+      }
+    },
+    "mechanism": {
+      "type": "object",
+      "description": "Cross-references audit.js's static message-passing/endpoint maps against this run's events. A static finding with no runtime match stays listed, tagged confirmedAtRuntime: false -- never dropped. A messages[].listener entry carries the message-handler call graph's calls field when present (sourced from audit.js collectMessagePassing, not added by mechanism.js itself).",
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": { "type": "string" },
+              "method": { "type": ["string", "null"] },
+              "headersKeys": { "type": "array", "items": { "type": "string" } },
+              "confirmedAtRuntime": { "type": "boolean" },
+              "observed": { "type": "array" }
+            }
+          }
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sender": {},
+              "listener": {},
+              "discriminants": { "type": "array", "items": { "type": "string" } },
+              "confidence": { "enum": ["exact", "probable", "ambiguous"] },
+              "confirmedAtRuntime": { "type": "boolean" },
+              "observed": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    "timeline": {
+      "type": "object",
+      "description": "Causal links between events, derived purely from the events array -- no new browser mechanism. Each edge is honestly labeled by how sure it is: 'message-pair' (exact) links a sent message to the received event it caused; 'same-session-proximity' (probable) is a real heuristic, never claimed stronger than the evidence (same session, soon after).",
+      "properties": {
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "basis", "confidence"],
+            "properties": {
+              "from": { "type": "integer", "minimum": 0 },
+              "to": { "type": "integer", "minimum": 0 },
+              "basis": { "enum": ["message-pair", "same-session-proximity"] },
+              "confidence": { "enum": ["exact", "probable"] }
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["capability", "target", "reason", "severity"],
+        "properties": {
+          "capability": { "type": "string" },
+          "target": { "type": "string" },
+          "reason": { "type": "string" },
+          "severity": { "enum": ["always-on", "known-gap", "blocking"] }
+        }
+      }
+    },
+    "disclaimer": { "type": "string" }
+  }
+}

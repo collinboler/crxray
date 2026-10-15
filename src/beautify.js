@@ -2,13 +2,13 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import beautifyPkg from 'js-beautify';
 
 const beautifyJs = beautifyPkg.js;
-import { walkFiles, relPath } from './walk.js';
+import { walkFiles, relPath, isWakaruOutput, isHumanifyOutput } from './walk.js';
 
 /**
  * Beautify every .js file in an unpacked extension directory.
  */
 export function beautifyDirectory(dir, { quiet = false } = {}) {
-  const jsFiles = walkFiles(dir, { extensions: ['.js'] });
+  const jsFiles = walkFiles(dir, { extensions: ['.js'] }).filter((file) => !isWakaruOutput(file) && !isHumanifyOutput(file));
   const results = { processed: 0, changed: 0, skipped: 0, errors: [] };
 
   for (const file of jsFiles) {

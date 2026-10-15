@@ -1,0 +1,8 @@
+{
+  "manifest_version": 3,
+  "name": "crxray-capture-fixture",
+  "version": "1.0",
+  "background": { "service_worker": "sw.js" },
+  "action": { "default_popup": "popup.html" },
+  "permissions": ["storage"]
+}

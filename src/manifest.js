@@ -55,6 +55,14 @@ export function summarizeManifest(manifest) {
     permissions: manifest.permissions ?? [],
     optionalPermissions: manifest.optional_permissions ?? [],
     hostPermissions: manifest.host_permissions ?? [],
+    optionalHostPermissions: manifest.optional_host_permissions ?? [],
+    contentSecurityPolicy: manifest.content_security_policy ?? null,
+    externallyConnectable: manifest.externally_connectable ?? null,
+    oauth2: manifest.oauth2
+      ? { clientId: manifest.oauth2.client_id ?? null, scopes: manifest.oauth2.scopes ?? [] }
+      : null,
+    updateUrl: manifest.update_url ?? null,
+    declarativeNetRequestRulesets: manifest.declarative_net_request?.rule_resources?.length ?? 0,
     contentScripts: (manifest.content_scripts ?? []).map((cs) => ({
       matches: cs.matches ?? [],
       js: cs.js ?? [],

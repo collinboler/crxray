@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { readManifest, summarizeManifest } from './manifest.js';
-import { walkFiles, relPath } from './walk.js';
+import { walkFiles, relPath, isWakaruOutput, isHumanifyOutput } from './walk.js';
 import { collectEndpointsFromContent } from './audit.js';
 
 /**
@@ -40,7 +40,11 @@ export function diffExtensions(leftDir, rightDir) {
   }
 
   const permissionChanges = diffPermissions(leftSummary, rightSummary);
-  const endpointChanges = diffEndpoints(leftDir, rightDir, modified.map((m) => m.path));
+  const endpointChanges = diffEndpoints(leftDir, rightDir, {
+    modified: modified.map((m) => m.path),
+    added,
+    removed,
+  });
 
   return {
     left: { name: leftSummary?.name, version: leftSummary?.version, dir: leftDir },
@@ -54,6 +58,7 @@ export function diffExtensions(leftDir, rightDir) {
 function fileIndex(dir) {
   const index = new Map();
   for (const file of walkFiles(dir)) {
+    if (isWakaruOutput(file) || isHumanifyOutput(file)) continue;
     const rel = relPath(dir, file);
     const content = readFileSync(file);
     index.set(rel, {
@@ -81,12 +86,11 @@ function diffPermissions(left, right) {
   return changes;
 }
 
-function diffEndpoints(leftDir, rightDir, modifiedPaths) {
-  const jsModified = modifiedPaths.filter((p) => p.endsWith('.js'));
-  const added = new Set();
-  const removed = new Set();
+function diffEndpoints(leftDir, rightDir, { modified, added, removed }) {
+  const addedEps = new Set();
+  const removedEps = new Set();
 
-  for (const rel of jsModified) {
+  for (const rel of modified.filter((p) => p.endsWith('.js'))) {
     let leftContent = '';
     let rightContent = '';
     try {
@@ -97,11 +101,31 @@ function diffEndpoints(leftDir, rightDir, modifiedPaths) {
     }
     const leftEps = new Set(collectEndpointsFromContent(leftContent));
     const rightEps = new Set(collectEndpointsFromContent(rightContent));
-    for (const ep of rightEps) if (!leftEps.has(ep)) added.add(ep);
-    for (const ep of leftEps) if (!rightEps.has(ep)) removed.add(ep);
+    for (const ep of rightEps) if (!leftEps.has(ep)) addedEps.add(ep);
+    for (const ep of leftEps) if (!rightEps.has(ep)) removedEps.add(ep);
   }
 
-  return { added: [...added].sort(), removed: [...removed].sort() };
+  for (const rel of added.filter((p) => p.endsWith('.js'))) {
+    try {
+      for (const ep of collectEndpointsFromContent(readFileSync(path.join(rightDir, rel), 'utf8'))) {
+        addedEps.add(ep);
+      }
+    } catch {
+      // unreadable, skip
+    }
+  }
+
+  for (const rel of removed.filter((p) => p.endsWith('.js'))) {
+    try {
+      for (const ep of collectEndpointsFromContent(readFileSync(path.join(leftDir, rel), 'utf8'))) {
+        removedEps.add(ep);
+      }
+    } catch {
+      // unreadable, skip
+    }
+  }
+
+  return { added: [...addedEps].sort(), removed: [...removedEps].sort() };
 }
 
 export function formatDiffReport(diff) {

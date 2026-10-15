@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { walkFiles, relPath } from './walk.js';
+import { walkFiles, relPath, isSupersededByUnpack, isWakaruOutput, isHumanifyOutput } from './walk.js';
 
 /**
  * Build an entry-point map and readability stats for an unpacked extension.
@@ -63,9 +63,11 @@ export function buildEntryPointMap(dir, manifest) {
   }
 
   const jsFiles = walkFiles(dir, { extensions: ['.js'] });
-  const readability = { total: jsFiles.length, minified: 0, readable: 0, files: [] };
+  const readability = { total: 0, minified: 0, readable: 0, files: [] };
 
   for (const file of jsFiles) {
+    if (isSupersededByUnpack(file) || isWakaruOutput(file) || isHumanifyOutput(file)) continue;
+    readability.total++;
     const rel = relPath(dir, file);
     const content = readFileSync(file, 'utf8');
     const minified = isMinified(content);

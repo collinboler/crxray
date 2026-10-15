@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { walkFiles, relPath } from './walk.js';
+import { walkFiles, relPath, isWakaruOutput } from './walk.js';
 
 async function loadWebcrack() {
   try {
@@ -23,7 +23,7 @@ const MAX_SIZE = 5 * 1024 * 1024;
  */
 export async function deobfuscateDirectory(dir, { quiet = false } = {}) {
   const webcrack = await loadWebcrack();
-  const jsFiles = walkFiles(dir, { extensions: ['.js'] });
+  const jsFiles = walkFiles(dir, { extensions: ['.js'] }).filter((file) => !isWakaruOutput(file));
   const results = { processed: 0, changed: 0, unpacked: 0, skipped: 0, errors: [] };
 
   for (const file of jsFiles) {

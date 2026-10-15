@@ -1,0 +1,6 @@
+{
+  "steps": [
+    { "action": "openPopup" },
+    { "action": "wait", "ms": 1500 }
+  ]
+}
